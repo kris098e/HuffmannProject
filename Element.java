@@ -1,9 +1,11 @@
+import javax.xml.soap.Node;
+
 public class Element {
 
     private int key;
     private Object data;
 
-    public Element(int i, Object o){
+    public Element(Integer i, Object o){
         this.key = i;
         this.data = o;
     }
