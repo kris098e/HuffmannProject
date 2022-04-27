@@ -36,9 +36,9 @@ public class Decode {
                     writtenLength += 1;
                 }
             }
-
-            bitInput.close();
+            
             outStream.close();
+            bitInput.close();
         } catch (IOException e) {
             System.out.println("FUckd up");
         }
