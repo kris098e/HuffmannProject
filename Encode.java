@@ -1,65 +1,55 @@
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Encode {
-        private static final int PARENT = -1; 
-        public static int[] readBytes() {
+
+        public static int[] readBytes(String inputFile) {
             int[] holder = new int[256];
             try{
-                FileInputStream in = new FileInputStream("test.txt");
+                FileInputStream in = new FileInputStream(inputFile);
                 int read;
                 while( (read=in.read()) != -1) {
                     holder[read]++;
                 }
+                in.close();
             } catch(IOException e) {
                 e.printStackTrace();
             }
             return holder;
         }
 
-        public static Element huffMann(int[] v) {
-            PQHeap heap = new PQHeap();
-            for(int i = 0; i < v.length; i++) {
-                heap.insert(new Element(v[i], i));
-            }
-            for(int i = 0; i < 256; i++) {
-                Element temp1 = heap.extractMin();
-                Element temp2 = heap.extractMin();
+        private static void WriteHuffmann( int[] occurrences, String inputFile, String outputFile, String[] tree ){
+            try {
+                FileOutputStream out = new FileOutputStream(outputFile);
+                BitOutputStream bitOut = new BitOutputStream(out);
                 
-                Node left = new Node(temp1.getData()));
-                Node right = new Node(temp2.getData()));
+                FileInputStream in = new FileInputStream(inputFile);
 
-                heap.insert(new Element(temp1.getKey() + temp2.getKey(), new Node(PARENT, left, right)));
+                for (int i = 0; i < occurrences.length; i++) {
+                    int outputByte = occurrences[i];
+                    bitOut.writeInt(outputByte);
+                }
+                int inputByte;
+                while( (inputByte=in.read()) != -1 ) {
+                    String byteString = tree[inputByte];
+                    for (int i = 0; i < byteString.length(); i++) {
+                        Character bitString = byteString.charAt(i);
+                        int bit = Integer.parseInt(bitString.toString());
+                        bitOut.writeBit(bit);
+                    }
+                }
+                bitOut.close();
+                in.close();
+            } catch(IOException e) {
+                e.printStackTrace();
             }
-            return heap.extractMin();
-        } 
-
-        public static void main(String[] args) {
-            int[] temp = readBytes();
-            // for(int x : temp) {
-            //     System.out.print(x + ", ");
-            // }
-            huffMann(temp);
         }
 
-        private static class Node {
-            
-            private Integer _byte;
-            private Node left;
-            private Node right;
 
-            private Node(int _byte) {
-                this._byte = _byte;
-            }
-
-            private Node(int _byte, Node left, Node right) {
-                this._byte = _byte;
-                this.left = left;
-                this.right = right;
-            }
-
-            public Integer getByte() {
-                return _byte;
-            }
+        public static void main(String[] args) {
+            int[] temp = readBytes(args[0]);
+            String[] str = Huffmann.huffMannCodes(Huffmann.huffmannTree(temp));
+            WriteHuffmann(temp, args[0], args[1], str);
         }
 }
