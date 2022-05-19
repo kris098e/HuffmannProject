@@ -9,18 +9,20 @@ public class Huffmann {
             heap.insert(new Element(v[i], new Node(i)));
         }
         for(int i = 0; i < 255; i++) {
+            // retrive roots
             Element temp1 = heap.extractMin();
             Element temp2 = heap.extractMin();
-            
+            // retrive root data
             Node left = (Node)(temp1.getData());
             Node right = (Node)(temp2.getData());
-
+            // merge
             heap.insert(new Element(temp1.getKey() + temp2.getKey(), new Node(PARENT, left, right)));
         }
+        // return root in finaltree
         return heap.extractMin();
     } 
     
-    //Create the list of codes for each byte
+    // Create the list of codes for each byte
     public static String[] huffMannCodes(Element e) {
         String temp = "";
         String[] v = new String[256];
@@ -28,6 +30,7 @@ public class Huffmann {
         return v;
     }
 
+    // inorder-traversal but when going left we at 0 to the current String and 1 when we go to the right
     private static void auxHuffMannCodes(Node node, String[] v, String holder) {
         if(node != null) {
             auxHuffMannCodes(node.left, v, holder + "0");

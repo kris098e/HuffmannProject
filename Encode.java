@@ -3,7 +3,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Encode {
-
+        
+        // read all bytes and make a table of occorences
         public static int[] readBytes(String inputFile) {
             int[] holder = new int[256];
             try{
@@ -18,19 +19,23 @@ public class Encode {
             }
             return holder;
         }
-
+        
+        // write bytes from occurences from inputfile to outputfile and write codes to encodedfile
         private static void WriteHuffmann( int[] occurrences, String inputFile, String outputFile, String[] tree ){
             try {
                 FileOutputStream out = new FileOutputStream(outputFile);
                 BitOutputStream bitOut = new BitOutputStream(out);
                 
                 FileInputStream in = new FileInputStream(inputFile);
-
+                
+                // write bytes from occurences from input to outputfile
                 for (int i = 0; i < occurrences.length; i++) {
                     int outputByte = occurrences[i];
                     bitOut.writeInt(outputByte);
                 }
                 int inputByte;
+                // write bits to encodedfile by converting the given ASCII-code to huffmann-code and then write the
+                // bits
                 while( (inputByte=in.read()) != -1 ) {
                     String byteString = tree[inputByte];
                     for (int i = 0; i < byteString.length(); i++) {
@@ -48,8 +53,8 @@ public class Encode {
 
 
         public static void main(String[] args) {
-            int[] temp = readBytes(args[0]);
-            String[] str = Huffmann.huffMannCodes(Huffmann.huffmannTree(temp));
-            WriteHuffmann(temp, args[0], args[1], str);
+            int[] occorences = readBytes(args[0]);
+            String[] tree = Huffmann.huffMannCodes(Huffmann.huffmannTree(occorences));
+            WriteHuffmann(occorences, args[0], args[1], tree);
         }
 }
